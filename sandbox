@@ -11,21 +11,39 @@ def main():
     """Test various simulation scenarios."""
     
     print("Creating network environment...")
-    # Create environment with 3 APs of different capacities
-    env = NetworkEnvironment(num_aps=3, ap_capacities=[50, 75, 100])
-    
-    # Configure traffic patterns
+    # Create environment with realistic AP capacities
+    # Most enterprise APs can handle 50-100 Mbps of actual throughput
+    env = NetworkEnvironment(num_aps=3, ap_capacities=[10, 15, 20])
+    env.max_steps = 2500
+
+    # Configure traffic patterns for ~260 active devices
     traffic_patterns = {
-        'smooth': {'enabled': True, 'rate': 40},
-        'periodic': {'enabled': True, 'base_rate': 20, 'period': 5, 'amplitude': 15},
-        'burst': {'enabled': True, 'base_rate': 10, 'burst_prob': 0.1, 'burst_size': 30}
+        'smooth': {
+            'enabled': False, 
+            'rate': 80  # ~80 packets per second baseline
+        },
+        
+        'periodic': {
+            'enabled': False, 
+            'base_rate': 50,    # Base load
+            'period': 10,       # 10-second cycle
+            'amplitude': 40     # Variation amount
+        },
+        
+        'burst': {
+            'enabled': True, 
+            'base_rate': 30,       # Background bursts
+            'burst_prob': 0.20,    # Probability of burst occurring (frequent)
+            'burst_size': 90       # Size of burst when it happens
+        }
     }
     
-    print("\nRunning simulation with least loaded scheduler...")
-    # Run a simulation with least loaded packet scheduling
+    s = least_loaded_scheduler
+    print(f"\nRunning simulation with {s.__name__} scheduler...")
+    # Run a simulation with `s` scheduling
     metrics = env.run_episode(
         traffic_patterns,
-        scheduler=least_loaded_scheduler,
+        scheduler=s,
         render=True,
         render_interval=50  # Render every 50 steps
     )

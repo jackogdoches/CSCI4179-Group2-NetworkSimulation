@@ -235,7 +235,7 @@ class NetworkScheduler:
     
     def visualize_performance(self, save_path=None):
         """Visualize network performance metrics."""
-        fig, axs = plt.subplots(4, 1, figsize=(12, 16), sharex=True)
+        fig, axs = plt.subplots(4, 1, figsize=(12, 8), sharex=True)
         
         # Throughput over time
         axs[0].plot(self.time_history, self.throughput_history, 'b-')
