@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+"""
+Scratch file for experimenting with the network simulation.
+"""
+
+# Import components from your package
+from network_environment import NetworkEnvironment
+from schedulers import round_robin_scheduler, least_loaded_scheduler, pattern_aware_scheduler
+
+def main():
+    """Test various simulation scenarios."""
+    
+    print("Creating network environment...")
+    # Create environment with 3 APs of different capacities
+    env = NetworkEnvironment(num_aps=3, ap_capacities=[50, 75, 100])
+    
+    # Configure traffic patterns
+    traffic_patterns = {
+        'smooth': {'enabled': True, 'rate': 40},
+        'periodic': {'enabled': True, 'base_rate': 20, 'period': 5, 'amplitude': 15},
+        'burst': {'enabled': True, 'base_rate': 10, 'burst_prob': 0.1, 'burst_size': 30}
+    }
+    
+    print("\nRunning simulation with least loaded scheduler...")
+    # Run a simulation with least loaded packet scheduling
+    metrics = env.run_episode(
+        traffic_patterns,
+        scheduler=least_loaded_scheduler,
+        render=True,
+        render_interval=50  # Render every 50 steps
+    )
+    
+    # Print final metrics
+    print("\nFinal Metrics:")
+    for key, value in metrics.items():
+        if isinstance(value, (int, float)):
+            print(f"  {key}: {value:.2f}")
+        else:
+            print(f"  {key}: {value}")
+    
+    # Visualize results
+    env.visualize_results()
+    
+    print("\nSimulation complete!")
+
+if __name__ == "__main__":
+    main()
